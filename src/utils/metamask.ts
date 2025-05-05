@@ -1,4 +1,3 @@
-
 import { toast } from "@/components/ui/use-toast";
 
 export enum ConnectionState {
@@ -75,6 +74,31 @@ export async function connectWallet(): Promise<string | null> {
       variant: "destructive",
     });
     return null;
+  }
+}
+
+export async function disconnectWallet(): Promise<boolean> {
+  if (!window.ethereum) {
+    toast({
+      title: "MetaMask not found",
+      description: "Please install MetaMask extension",
+      variant: "destructive",
+    });
+    return false;
+  }
+
+  try {
+    // There's no direct method to disconnect in MetaMask's API,
+    // but we can simulate a disconnect by clearing our state
+    return true;
+  } catch (error) {
+    console.error("Error disconnecting from wallet:", error);
+    toast({
+      title: "Disconnection Error",
+      description: "Failed to disconnect from MetaMask",
+      variant: "destructive",
+    });
+    return false;
   }
 }
 

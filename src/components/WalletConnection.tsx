@@ -1,9 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { LogOut } from "lucide-react";
 import { 
   connectWallet, 
+  disconnectWallet,
   switchNetwork, 
   getConnectionState,
   ConnectionState,
@@ -16,6 +17,7 @@ const WalletConnection = () => {
   );
   const [account, setAccount] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
 
   // Initialize connection on load
   useEffect(() => {
@@ -80,6 +82,23 @@ const WalletConnection = () => {
       }
     } finally {
       setIsConnecting(false);
+    }
+  };
+
+  const handleDisconnect = async () => {
+    setIsDisconnecting(true);
+    try {
+      const success = await disconnectWallet();
+      if (success) {
+        setConnectionState(ConnectionState.NOT_CONNECTED);
+        setAccount(null);
+        toast({
+          title: "Disconnected",
+          description: "You have been disconnected from your wallet",
+        });
+      }
+    } finally {
+      setIsDisconnecting(false);
     }
   };
 
@@ -151,6 +170,16 @@ const WalletConnection = () => {
               Withdraw Yield Token
             </Button>
           </div>
+          
+          <Button
+            onClick={handleDisconnect}
+            variant="outline"
+            className="border-red-300 text-red-500 hover:bg-red-50 mt-6 flex items-center gap-2"
+            disabled={isDisconnecting}
+          >
+            <LogOut size={18} />
+            {isDisconnecting ? "Disconnecting..." : "Disconnect Wallet"}
+          </Button>
         </>
       ) : (
         <Button 
